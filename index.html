@@ -6,76 +6,84 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  margin: 0;
-  height: 100vh;
-  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Arial, sans-serif;
-  overflow: hidden;
-}
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+  }
 
-/* 💖 floating hearts */
-.heart {
-  position: absolute;
-  font-size: 20px;
-  opacity: 0.85;
-  pointer-events: none;
-  animation: floatUp 6s linear forwards;
-}
+  /* ✅ hearts layer */
+  #heartsLayer{
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+  }
 
-@keyframes floatUp {
-  0% {
-    transform: translateY(0) scale(1);
+  .heart {
+    position: absolute;
+    bottom: -40px;
+    font-size: 22px;
     opacity: 0.9;
+    animation: floatUp linear forwards;
+    will-change: transform, opacity;
   }
-  100% {
-    transform: translateY(-110vh) scale(1.8);
-    opacity: 0;
+
+  @keyframes floatUp {
+    from { transform: translateY(0) scale(1); opacity: 0.95; }
+    to   { transform: translateY(-120vh) scale(1.8); opacity: 0; }
   }
-}
 
-.card {
-  background: white;
-  padding: 30px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  width: 90%;
-  max-width: 350px;
-  position: relative;
-}
+  .card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 350px;
+    position: relative;
+    z-index: 2; /* ✅ above hearts */
+  }
 
-h1 {
-  color: #ff4d6d;
-  margin-bottom: 25px;
-}
+  h1 {
+    color: #ff4d6d;
+    margin-bottom: 25px;
+  }
 
-button {
-  padding: 12px 25px;
-  font-size: 16px;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-}
+  button {
+    padding: 12px 25px;
+    font-size: 16px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+  }
 
-.yes {
-  background: #ff4d6d;
-  color: white;
-}
+  .yes {
+    background: #ff4d6d;
+    color: white;
+  }
 
-.no {
-  background: #ddd;
-  position: absolute;
-  left: 20px;
-  top: 120px;
-}
+  .no {
+    background: #ddd;
+    position: absolute;
+    left: 20px;
+    top: 120px;
+  }
 </style>
 </head>
 
 <body>
+
+<!-- ✅ Hearts will be added here -->
+<div id="heartsLayer"></div>
+
 <div class="card">
   <h1>💘 Saumyaaaaaa, will you be my Valentine? 💘</h1>
   <button class="yes" onclick="yesClick()">Yes ❤️</button>
@@ -83,70 +91,84 @@ button {
 </div>
 
 <script>
-const noBtn = document.getElementById("noBtn");
-const card = document.querySelector(".card");
+  const noBtn = document.getElementById("noBtn");
+  const card = document.querySelector(".card");
+  const heartsLayer = document.getElementById("heartsLayer");
 
-/* No button keeps moving */
-function randomMove() {
-  const maxX = card.clientWidth - noBtn.offsetWidth;
-  const maxY = card.clientHeight - noBtn.offsetHeight;
+  function randomMove() {
+    const maxX = card.clientWidth - noBtn.offsetWidth;
+    const maxY = card.clientHeight - noBtn.offsetHeight;
 
-  const x = Math.random() * Math.max(0, maxX);
-  const y = Math.random() * Math.max(0, maxY);
+    const x = Math.random() * Math.max(0, maxX);
+    const y = Math.random() * Math.max(0, maxY);
 
-  noBtn.style.left = x + "px";
-  noBtn.style.top = y + "px";
-}
-setInterval(randomMove, 700);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+  }
+  setInterval(randomMove, 700);
 
-/* 💖 Hearts generator */
-const heartEmojis = ["❤️", "💖", "💘", "💕", "💞", "💓", "💗", "💝"];
+  // ✅ Floating heart emojis
+  const heartEmojis = ["❤️","💖","💘","💕","💞","💓","💗","💝"];
 
-function createHeart() {
-  const heart = document.createElement("div");
-  heart.className = "heart";
-  heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+  function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
 
-  heart.style.left = Math.random() * 100 + "vw";
-  heart.style.bottom = "-30px";
-  heart.style.fontSize = (Math.random() * 22 + 14) + "px";
-  heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
-  heart.style.opacity = (Math.random() * 0.4 + 0.5).toFixed(2);
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 22 + 14) + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
 
-  document.body.appendChild(heart);
+    heartsLayer.appendChild(heart);
 
-  // remove after animation
-  setTimeout(() => heart.remove(), 8000);
-}
+    setTimeout(() => heart.remove(), 8000);
+  }
 
-// more hearts 😈💘
-setInterval(createHeart, 250);
+  // ✅ more hearts
+  setInterval(createHeart, 180);
 
-function yesClick() {
-  document.body.innerHTML = `
-  <div style="
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    background:#ff9a9e;
-    color:white;
-    text-align:center;
-    padding:20px;
-    overflow:hidden;
-  ">
-    <h1>💖 Yayyy Saumyaaaaaa! I knew it 😍💖</h1>
-    <img
-      src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif"
-      alt="Dancing girl"
-      style="width:250px; margin-top:20px; border-radius:20px;"
-    >
-  </div>`;
+  function yesClick() {
+    document.body.innerHTML = `
+      <div id="heartsLayer"></div>
+      <div style="
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        height:100vh;
+        background:#ff9a9e;
+        color:white;
+        text-align:center;
+        padding:20px;
+        overflow:hidden;
+        position:relative;
+        z-index:2;
+      ">
+        <h1>💖 Yayyy Saumyaaaaaa! I knew it 😍💖</h1>
+        <img
+          src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif"
+          alt="Dancing girl"
+          style="width:250px; margin-top:20px; border-radius:20px;"
+        >
+      </div>
+    `;
 
-  // keep hearts even after Yes screen
-  setInterval(createHeart, 220);
-}
+    const layer = document.getElementById("heartsLayer");
+
+    function createHeartOnYes() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.fontSize = (Math.random() * 22 + 14) + "px";
+      heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
+      layer.appendChild(heart);
+      setTimeout(() => heart.remove(), 8000);
+    }
+
+    setInterval(createHeartOnYes, 160);
+  }
 </script>
+
 </body>
 </html>
